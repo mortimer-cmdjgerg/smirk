@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soulsplit Healing Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .calculator {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        #result, #breakdown {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>Soulsplit Healing Calculator</h2>
+        <p>Soulsplit heals at the following rates:</p>
+        <ul>
+            <li>First 2000: 5%</li>
+            <li>Next 2000: 2.5%</li>
+            <li>Remainder: 1.25%</li>
+        </ul>
+        <input type="number" id="inputNumber" placeholder="Enter a number">
+        <button onclick="calculate()">Calculate</button>
+        <p id="result"></p>
+        <div id="breakdown"></div>
+    </div>
+
+    <script>
+        function calculate() {
+            const input = parseFloat(document.getElementById('inputNumber').value);
+            if (isNaN(input) || input < 0) {
+                document.getElementById('result').textContent = "Please enter a valid positive number.";
+                document.getElementById('breakdown').textContent = "";
+                return;
+            }
+            
+            let total = 0;
+            let breakdown = "";
+
+            if (input > 0) {
+                const firstTier = Math.min(input, 2000);
+                total += firstTier * 0.05;
+                breakdown += `First ${firstTier.toFixed(2)}: ${(firstTier * 0.05).toFixed(2)}<br>`;
+                
+                if (input > 2000) {
+                    const secondTier = Math.min(input - 2000, 2000);
+                    total += secondTier * 0.025;
+                    breakdown += `Next ${secondTier.toFixed(2)}: ${(secondTier * 0.025).toFixed(2)}<br>`;
+                    
+                    if (input > 4000) {
+                        const thirdTier = input - 4000;
+                        total += thirdTier * 0.0125;
+                        breakdown += `Remainder ${thirdTier.toFixed(2)}: ${(thirdTier * 0.0125).toFixed(2)}<br>`;
+                    }
+                }
+            }
+            const eofBonus = total * 0.1875
+            const finalResult = total * 1.1875;
+            
+            document.getElementById('result').textContent = `Total Result: ${finalResult.toFixed(2)}`;
+            document.getElementById('breakdown').innerHTML = `Breakdown:<br>${breakdown}Bonus 18.75% from Amulet of Souls/EoF: ${(eofBonus).toFixed(2)}<br>Total: ${(finalResult).toFixed(2)}<h4>Mortimer and greg are no match for JD`;
+        }
+    </script>
+</body>
+</html>
