@@ -3,32 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soulsplit Healinig Calculator</title>
+    <title>Soulsplit Healing Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            line-height: 1.6;
             margin: 0;
-            background-color: #f0f0f0;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
         .calculator {
             background-color: white;
-            padding: 20px;
             border-radius: 8px;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 400px;
-            width: 100%;
+        }
+        h2 {
+            margin-bottom: 0;
+        }
+        h5 {
+            margin-top: 5px;
+            color: #666;
+            font-weight: normal;
         }
         input, button {
-            margin: 10px 0;
-            padding: 5px;
             width: 100%;
-            box-sizing: border-box;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
-        #result, #breakdown {
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #breakdown {
             margin-top: 20px;
         }
     </style>
@@ -36,52 +52,71 @@
 <body>
     <div class="calculator">
         <h2>Soulsplit Healing Calculator</h2>
+        <h5>by JDMC</h5>
         <p>Soulsplit heals at the following rates:</p>
         <ul>
             <li>First 2000: 10%</li>
             <li>Next 2000: 5%</li>
             <li>Remainder: 1.25%</li>
         </ul>
-        <input type="number" id="inputNumber" placeholder="Enter a number">
+        <p>Includes 18.75% bonus from Amulet of Souls / EoF</p>
+        <input type="number" id="damageInput" placeholder="Enter damage amount">
         <button onclick="calculate()">Calculate</button>
-        <p id="result"></p>
         <div id="breakdown"></div>
     </div>
 
     <script>
         function calculate() {
-            const input = parseFloat(document.getElementById('inputNumber').value);
-            if (isNaN(input) || input < 0) {
-                document.getElementById('result').textContent = "Please enter a valid positive number.";
-                document.getElementById('breakdown').textContent = "";
+            const damage = parseInt(document.getElementById('damageInput').value);
+            if (isNaN(damage) || damage <= 0) {
+                document.getElementById('breakdown').innerHTML = "Please enter a valid positive number.";
                 return;
             }
-            
-            let total = 0;
+
+            let totalHealing = 0;
             let breakdown = "";
 
-            if (input > 0) {
-                const firstTier = Math.min(input, 2000);
-                total += firstTier * 0.10;
-                breakdown += `First ${firstTier.toFixed(2)}: ${(firstTier * 0.10).toFixed(2)}<br>`;
+            const fullHits = Math.floor(damage / 30000);
+            const remainder = damage % 30000;
+
+            for (let i = 0; i < fullHits; i++) {
+                const hitHealing = calculateHealing(30000);
+                totalHealing += hitHealing;
+                breakdown += `Hit ${i + 1} (30000 damage): ${hitHealing.toFixed(2)} base healing<br>`;
+            }
+
+            if (remainder > 0) {
+                const remainderHealing = calculateHealing(remainder);
+                totalHealing += remainderHealing;
+                breakdown += `Remainder (${remainder} damage): ${remainderHealing.toFixed(2)} base healing<br>`;
+            }
+
+            const bonusHealing = totalHealing * 0.1875;
+            const totalWithBonus = totalHealing + bonusHealing;
+
+            breakdown += `<br>Base Healing: ${totalHealing.toFixed(2)}<br>`;
+            breakdown += `Bonus from Amulet of Souls / EoF (18.75%): ${bonusHealing.toFixed(2)}<br>`;
+            breakdown += `<strong>Total Healing with Bonus: ${totalWithBonus.toFixed(2)}</strong>`;
+            document.getElementById('breakdown').innerHTML = breakdown;
+        }
+
+        function calculateHealing(amount) {
+            let healing = 0;
+            if (amount > 0) {
+                const firstTier = Math.min(amount, 2000);
+                healing += firstTier * 0.10;
                 
-                if (input > 2000) {
-                    const secondTier = Math.min(input - 2000, 2000);
-                    total += secondTier * 0.005;
-                    breakdown += `Next ${secondTier.toFixed(2)}: ${(secondTier * 0.05).toFixed(2)}<br>`;
+                if (amount > 2000) {
+                    const secondTier = Math.min(amount - 2000, 2000);
+                    healing += secondTier * 0.05;
                     
-                    if (input > 4000) {
-                        const thirdTier = input - 4000;
-                        total += thirdTier * 0.0125;
-                        breakdown += `Remainder ${thirdTier.toFixed(2)}: ${(thirdTier * 0.0125).toFixed(2)}<br>`;
+                    if (amount > 4000) {
+                        const thirdTier = amount - 4000;
+                        healing += thirdTier * 0.0125;
                     }
                 }
             }
-            const eofBonus = total * 0.1875
-            const finalResult = total * 1.1875;
-            
-            document.getElementById('result').textContent = `Total Result: ${finalResult.toFixed(2)}`;
-            document.getElementById('breakdown').innerHTML = `Breakdown:<br>${breakdown}Bonus 18.75% from Amulet of Souls/EoF: ${(eofBonus).toFixed(2)}<br>Total: ${(finalResult).toFixed(2)}<h4>Mortimer likes to dabble in the dark.`;
+            return healing;
         }
     </script>
 </body>
