@@ -63,12 +63,12 @@
             if (input > 0) {
                 const firstTier = Math.min(input, 2000);
                 total += firstTier * 0.05;
-                breakdown += `First ${firstTier.toFixed(2)}: ${(firstTier * 0.05).toFixed(2)}<br>`;
+                breakdown += `First ${firstTier.toFixed(2)}: ${(firstTier * 0.10).toFixed(2)}<br>`;
                 
                 if (input > 2000) {
                     const secondTier = Math.min(input - 2000, 2000);
                     total += secondTier * 0.025;
-                    breakdown += `Next ${secondTier.toFixed(2)}: ${(secondTier * 0.025).toFixed(2)}<br>`;
+                    breakdown += `Next ${secondTier.toFixed(2)}: ${(secondTier * 0.05).toFixed(2)}<br>`;
                     
                     if (input > 4000) {
                         const thirdTier = input - 4000;
@@ -81,7 +81,7 @@
             const finalResult = total * 1.1875;
             
             document.getElementById('result').textContent = `Total Result: ${finalResult.toFixed(2)}`;
-            document.getElementById('breakdown').innerHTML = `Breakdown:<br>${breakdown}Bonus 18.75% from Amulet of Souls/EoF: ${(eofBonus).toFixed(2)}<br>Total: ${(finalResult).toFixed(2)}<h4>Mortimer and greg are no match for JD`;
+            document.getElementById('breakdown').innerHTML = `Breakdown:<br>${breakdown}Bonus 18.75% from Amulet of Souls/EoF: ${(eofBonus).toFixed(2)}<br>Total: ${(finalResult).toFixed(2)}<h4>Mortimer likes to dabble in the dark.`;
         }
     </script>
 </body>
